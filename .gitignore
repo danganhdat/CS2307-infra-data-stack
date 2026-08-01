@@ -9,3 +9,4 @@ terraform/*.tfplan
 stack/.env
 *.pem
 *.key
+*.local.md
