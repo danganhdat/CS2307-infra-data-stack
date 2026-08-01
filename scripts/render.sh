@@ -25,5 +25,10 @@ POSTGRES_DB=appdb
 NEO4J_PASSWORD=$(get_secret neo4j-password)
 MINIO_ROOT_USER=minioadmin
 MINIO_ROOT_PASSWORD=$(get_secret minio-password)
+PGADMIN_PASSWORD=$(get_secret pgadmin-password)
 EOF
 echo "Wrote $DIR/.env"
+
+# pgAdmin runs as uid 5050 and needs its data dir writable.
+mkdir -p /mnt/data/pgadmin
+chown -R 5050:5050 /mnt/data/pgadmin

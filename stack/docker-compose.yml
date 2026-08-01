@@ -6,6 +6,7 @@ name: data-stack
 #   Neo4j     http://<public_ip>:7474   (Bolt on 7687)
 #   MinIO S3  http://<public_ip>:9000
 #   MinIO UI  http://<public_ip>:9001
+#   pgAdmin   http://<public_ip>:8080
 
 networks:
   backend:
@@ -67,4 +68,18 @@ services:
     ports:
       - "9000:9000"   # S3 API
       - "9001:9001"   # Console
+    networks: [backend]
+
+  pgadmin:
+    image: dpage/pgadmin4:8
+    restart: unless-stopped
+    depends_on: [postgres]
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com          # login id (not sensitive)
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}    # from Secret Manager
+      PGADMIN_LISTEN_PORT: 8080
+    volumes:
+      - /mnt/data/pgadmin:/var/lib/pgadmin   # host dir must be owned by uid 5050
+    ports:
+      - "8080:8080"
     networks: [backend]

@@ -47,15 +47,21 @@ Get the IP: `terraform output -raw public_ip`
 | Neo4j Browser | http://<public_ip>:7474        |
 | Neo4j Bolt    | bolt://<public_ip>:7687        |
 | Postgres      | <public_ip>:5432               |
+| pgAdmin (Postgres UI) | http://<public_ip>:8080 |
 
 Passwords are in Secret Manager:
 ```bash
 gcloud secrets versions access latest --secret=postgres-password
 gcloud secrets versions access latest --secret=neo4j-password
 gcloud secrets versions access latest --secret=minio-password
+gcloud secrets versions access latest --secret=pgadmin-password
 ```
 Logins: Postgres user `appuser` / db `appdb`; Neo4j user `neo4j`;
 MinIO user `minioadmin`.
+
+pgAdmin login: email `admin@admin.com`, password from `pgadmin-password`.
+Once in, add a server → Host `postgres`, Port `5432`, User `appuser`,
+Password from `postgres-password`, Database `appdb`.
 
 ## Security note
 

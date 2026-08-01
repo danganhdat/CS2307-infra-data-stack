@@ -60,12 +60,17 @@ resource "random_password" "minio" {
   length  = 24
   special = false
 }
+resource "random_password" "pgadmin" {
+  length  = 24
+  special = false
+}
 
 locals {
   secrets = {
     postgres-password = random_password.pg.result
     neo4j-password    = random_password.neo4j.result
     minio-password    = random_password.minio.result
+    pgadmin-password  = random_password.pgadmin.result
   }
 }
 

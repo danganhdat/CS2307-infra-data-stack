@@ -5,7 +5,7 @@ resource "google_compute_address" "public" {
 }
 
 # Opens the service ports for direct IP:port access.
-#   5432 Postgres | 7474 Neo4j Browser | 7687 Bolt | 9000 MinIO S3 | 9001 MinIO Console
+#   5432 Postgres | 7474 Neo4j Browser | 7687 Bolt | 8080 pgAdmin | 9000 MinIO S3 | 9001 MinIO Console
 #
 # By default this is open to the whole internet. That is convenient but risky —
 # Postgres especially gets scanned constantly. STRONGLY recommended: set
@@ -18,7 +18,7 @@ resource "google_compute_firewall" "services" {
   direction = "INGRESS"
   allow {
     protocol = "tcp"
-    ports    = ["5432", "7474", "7687", "9000", "9001"]
+    ports    = ["5432", "7474", "7687", "8080", "9000", "9001"]
   }
   source_ranges = var.allowed_source_ranges
 }

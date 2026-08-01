@@ -32,4 +32,4 @@ if ! grep -q "$MOUNT" /etc/fstab; then
 fi
 mount -a
 
-mkdir -p "$MOUNT"/stack "$MOUNT"/postgres "$MOUNT"/neo4j/data "$MOUNT"/neo4j/logs "$MOUNT"/minio
+mkdir -p "$MOUNT"/stack "$MOUNT"/postgres "$MOUNT"/neo4j/data "$MOUNT"/neo4j/logs "$MOUNT"/minio "$MOUNT"/pgadmin
