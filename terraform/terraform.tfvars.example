@@ -1,6 +1,8 @@
 project_id  = "your-gcp-project-id"
 region      = "asia-southeast2"
 zone        = "asia-southeast2-a"
+# Must be exactly owner/repo — no ".git" suffix, no "https://" prefix.
+# It has to match GitHub's assertion.repository exactly or WIF auth is rejected.
 github_repo = "your-github-username/infra-data-stack"
 # Lock the service ports to your IP (recommended). Find yours: curl ifconfig.me
 # allowed_source_ranges = ["1.2.3.4/32"]

@@ -25,7 +25,7 @@ variable "data_disk_gb" {
 
 variable "github_repo" {
   type        = string
-  description = "owner/repo that is allowed to deploy via Workload Identity Federation, e.g. myuser/infra-data-stack"
+  description = "owner/repo allowed to deploy via Workload Identity Federation, e.g. myuser/infra-data-stack. Exact match required — no '.git' suffix or 'https://' prefix."
 }
 
 variable "allowed_source_ranges" {

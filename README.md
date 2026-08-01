@@ -73,6 +73,19 @@ then `terraform apply`. SSH is always IAP-only, never public.
 Community Edition's console is object-browser only — manage buckets/users with
 the `mc` CLI. Point apps at the S3 API on :9000 with path-style addressing.
 
+## Troubleshooting
+
+**deploy fails at the auth step with `unauthorized_client` / "rejected by the
+attribute condition".** GitHub's OIDC token repo doesn't match `github_repo`.
+It must be *exactly* `owner/repo` — no `.git` suffix, no `https://` prefix
+(e.g. `danganhdat/CS2307-infra-data-stack`, not `...-stack.git`). Fix it in
+`terraform.tfvars`, run `terraform apply` (updates the WIF provider's
+attribute condition), then re-run the deploy workflow.
+
+**Can't reach a service on its port.** Check the firewall (`allowed_source_ranges`
+covers your IP) and that the container is up (`docker compose ps` on the VM).
+Remember it's plain HTTP — `http://<ip>:9001`, not `https://`.
+
 ## Backups (you own these)
 
 - Snapshot schedule on `data-disk`.
