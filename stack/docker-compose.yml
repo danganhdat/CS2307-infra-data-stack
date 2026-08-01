@@ -14,7 +14,7 @@ networks:
 
 services:
   postgres:
-    image: postgres:17
+    image: pgvector/pgvector:pg17   # Postgres 17 + pgvector extension
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
