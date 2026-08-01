@@ -18,6 +18,14 @@ jobs:
     defaults:
       run:
         working-directory: terraform
+    # terraform.tfvars is gitignored (local-only), so CI supplies the required
+    # variables here. github_repo comes from the built-in context — always
+    # "owner/repo" with no ".git", so it can't drift from the WIF condition.
+    # Set GCP_PROJECT_ID as a repo Variable (Settings → Secrets and variables
+    # → Actions → Variables).
+    env:
+      TF_VAR_project_id: ${{ vars.GCP_PROJECT_ID }}
+      TF_VAR_github_repo: ${{ github.repository }}
     steps:
       - uses: actions/checkout@v4
 
@@ -32,13 +40,14 @@ jobs:
       - run: terraform init
       - run: terraform plan -input=false
 
-      - name: Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      - name: Apply (manual runs only)
+        if: github.event_name == 'workflow_dispatch'
         run: terraform apply -auto-approve -input=false
 
-# NOTE: for CI to run terraform, the deployer service account needs permission
-# to manage these resources (networks, secrets, IAM, compute). The simplest
-# path is to run `terraform apply` locally for infra changes and keep this
-# workflow for plan-on-PR visibility. If you want full CI apply, grant the
-# deployer SA the needed roles (e.g. roles/editor + roles/resourcemanager
-# .projectIamAdmin) — scope carefully.
+# Behavior: push/PR runs `init` + `plan` only (visibility, stays green). `apply`
+# runs ONLY on a manual "Run workflow" (workflow_dispatch), and even then it
+# succeeds only if the deployer service account has rights to manage these
+# resources (networks, secrets, IAM, compute) — e.g. roles/editor +
+# roles/resourcemanager.projectIamAdmin, scope carefully.
+# Recommended default: apply infra locally (`cd terraform && terraform apply`)
+# and let CI handle plan for visibility.
