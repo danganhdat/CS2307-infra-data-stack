@@ -1,0 +1,8 @@
+project_id  = "your-gcp-project-id"
+region      = "asia-southeast2"
+zone        = "asia-southeast2-a"
+github_repo = "your-github-username/infra-data-stack"
+# Lock the service ports to your IP (recommended). Find yours: curl ifconfig.me
+# allowed_source_ranges = ["1.2.3.4/32"]
+# machine_type = "e2-standard-4"
+# data_disk_gb = 100

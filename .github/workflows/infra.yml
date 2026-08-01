@@ -1,0 +1,44 @@
+name: infra
+
+on:
+  push:
+    branches: [main]
+    paths: ["terraform/**", ".github/workflows/infra.yml"]
+  pull_request:
+    paths: ["terraform/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # required for Workload Identity Federation
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: terraform
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.DEPLOYER_SA }}
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - run: terraform init
+      - run: terraform plan -input=false
+
+      - name: Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve -input=false
+
+# NOTE: for CI to run terraform, the deployer service account needs permission
+# to manage these resources (networks, secrets, IAM, compute). The simplest
+# path is to run `terraform apply` locally for infra changes and keep this
+# workflow for plan-on-PR visibility. If you want full CI apply, grant the
+# deployer SA the needed roles (e.g. roles/editor + roles/resourcemanager
+# .projectIamAdmin) — scope carefully.

@@ -1,0 +1,51 @@
+name: deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "stack/**"
+      - "scripts/**"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  ZONE: asia-southeast2-a
+  VM: data-vm
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.DEPLOYER_SA }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Copy stack + scripts to VM
+        run: |
+          gcloud compute scp --recurse --tunnel-through-iap --zone "$ZONE" \
+            stack scripts "$VM":~
+
+      - name: Render env and deploy
+        run: |
+          gcloud compute ssh --tunnel-through-iap --zone "$ZONE" "$VM" --command '
+            set -e
+            sudo mkdir -p /mnt/data/stack
+            sudo cp -r ~/stack/. /mnt/data/stack/
+            sudo cp ~/scripts/render.sh /mnt/data/stack/
+            cd /mnt/data/stack
+            sudo bash render.sh
+            sudo docker compose pull
+            sudo docker compose up -d
+            sudo docker compose ps
+          '
